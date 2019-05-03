@@ -1,6 +1,7 @@
 'use strict'
 let { useState, useEffect } = require('react')
 let _throttle = require('lodash.throttle')
+let w = typeof window !== 'undefined'
 
 let supportsPassive = false
 try {
@@ -9,13 +10,13 @@ try {
       supportsPassive = true
     },
   })
-  window.addEventListener('testPassive', null, opts)
-  window.removeEventListener('testPassive', null, opts)
+  w && window.addEventListener('testPassive', null, opts)
+  w && window.removeEventListener('testPassive', null, opts)
 } catch (e) {}
 
 let getPosition = () => ({
-  x: window.pageXOffset,
-  y: window.pageYOffset,
+  x: w && window.pageXOffset,
+  y: w && window.pageYOffset,
 })
 
 let defaultOptions = {
@@ -32,14 +33,14 @@ function useWindowScrollPosition(options) {
       setPosition(getPosition())
     }, opts.throttle)
 
-    window.addEventListener(
+    w && window.addEventListener(
       'scroll',
       handleScroll,
       supportsPassive ? { passive: true } : false
     )
 
     return () => {
-      window.removeEventListener('scroll', handleScroll)
+      w && window.removeEventListener('scroll', handleScroll)
     }
   }, [])
 
